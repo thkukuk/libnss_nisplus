@@ -29,8 +29,8 @@ libnsl.pc
 core
 config.log
 config.status
-libnss_nis-*.tar.bz2
-libnss_nis-*.tar.gz
+libnss_nisplus-*.tar.bz2
+libnss_nisplus-*.tar.gz
 libtool
 src/nss_loader-test
 
