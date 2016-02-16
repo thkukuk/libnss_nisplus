@@ -16,35 +16,30 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <atomic.h>
 #include <nss.h>
 #include <errno.h>
 #include <pwd.h>
 #include <string.h>
-#include <bits/libc-lock.h>
 #include <rpcsvc/nis.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
 #include "nisplus-parser.h"
-#include <libnsl.h>
-#include <nis_intern.h>
-#include <nis_xdr.h>
-
 
 __libc_lock_define_initialized (static, lock)
 
 /* Connection information.  */
 static ib_request *ibreq;
 static directory_obj *dir;
-static dir_binding bptr;
+static struct dir_binding bptr;
 static char *tablepath;
 static char *tableptr;
 /* Cursor.  */
 static netobj cursor;
 
 
-nis_name pwd_tablename_val attribute_hidden;
-size_t pwd_tablename_len attribute_hidden;
+nis_name pwd_tablename_val;
+size_t pwd_tablename_len;
 
 enum nss_status
 _nss_pwd_create_tablename (int *errnop)
@@ -65,8 +60,6 @@ _nss_pwd_create_tablename (int *errnop)
       memcpy (__stpcpy (p, prefix), local_dir, local_dir_len + 1);
 
       pwd_tablename_len = sizeof (prefix) - 1 + local_dir_len;
-
-      atomic_write_barrier ();
 
       if (atomic_compare_and_exchange_bool_acq (&pwd_tablename_val, p, NULL))
 	{
@@ -321,7 +314,7 @@ _nss_nisplus_getpwnam_r (const char *name, struct passwd *pw,
     {
       enum nss_status status =  niserr2nss (result->status);
 
-      __set_errno (olderr);
+      errno = olderr;
 
       nis_freeresult (result);
       return status;
@@ -340,7 +333,7 @@ _nss_nisplus_getpwnam_r (const char *name, struct passwd *pw,
 	}
       else
 	{
-	  __set_errno (olderr);
+	  errno = olderr;
 	  return NSS_STATUS_NOTFOUND;
 	}
     }
@@ -380,7 +373,7 @@ _nss_nisplus_getpwuid_r (const uid_t uid, struct passwd *pw,
     {
       enum nss_status status = niserr2nss (result->status);
 
-      __set_errno (olderr);
+      errno = olderr;
 
       nis_freeresult (result);
       return status;
@@ -399,7 +392,7 @@ _nss_nisplus_getpwuid_r (const uid_t uid, struct passwd *pw,
 	}
       else
 	{
-	  __set_errno (olderr);
+	  errno = olderr;
 	  return NSS_STATUS_NOTFOUND;
 	}
     }

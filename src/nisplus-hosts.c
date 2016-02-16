@@ -17,17 +17,17 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <assert.h>
-#include <atomic.h>
 #include <ctype.h>
 #include <errno.h>
 #include <netdb.h>
 #include <nss.h>
 #include <string.h>
+#include <resolv.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <rpcsvc/nis.h>
-#include <bits/libc-lock.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
 
 __libc_lock_define_initialized (static, lock)
@@ -207,8 +207,6 @@ _nss_create_tablename (int *errnop)
       memcpy (__stpcpy (p, prefix), local_dir, local_dir_len + 1);
 
       tablename_len = sizeof (prefix) - 1 + local_dir_len;
-
-      atomic_write_barrier ();
 
       tablename_val = p;
     }
@@ -448,7 +446,7 @@ internal_gethostbyname2_r (const char *name, int af, struct hostent *host,
 	}
       else
 	{
-	  __set_errno (olderr);
+	  errno = olderr;
 	  *herrnop = NETDB_INTERNAL;
 	}
       nis_freeresult (result);
@@ -470,7 +468,7 @@ internal_gethostbyname2_r (const char *name, int af, struct hostent *host,
       return NSS_STATUS_TRYAGAIN;
     }
 
-  __set_errno (olderr);
+  errno = olderr;
   return NSS_STATUS_NOTFOUND;
 }
 
@@ -538,7 +536,7 @@ _nss_nisplus_gethostbyaddr_r (const void *addr, socklen_t addrlen, int af,
 
   if (result == NULL)
     {
-      __set_errno (ENOMEM);
+      errno = ENOMEM;
       return NSS_STATUS_TRYAGAIN;
     }
 
@@ -551,7 +549,7 @@ _nss_nisplus_gethostbyaddr_r (const void *addr, socklen_t addrlen, int af,
 	  *herrnop = NETDB_INTERNAL;
 	}
       else
-	__set_errno (olderr);
+	errno = olderr;
       nis_freeresult (result);
       return retval;
     }
@@ -572,7 +570,7 @@ _nss_nisplus_gethostbyaddr_r (const void *addr, socklen_t addrlen, int af,
       return NSS_STATUS_TRYAGAIN;
     }
 
-  __set_errno (olderr);
+  errno = olderr;
   return NSS_STATUS_NOTFOUND;
 }
 

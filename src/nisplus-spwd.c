@@ -20,9 +20,9 @@
 #include <errno.h>
 #include <shadow.h>
 #include <string.h>
-#include <bits/libc-lock.h>
 #include <rpcsvc/nis.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
 #include "nisplus-parser.h"
 
@@ -31,8 +31,8 @@ __libc_lock_define_initialized (static, lock)
 static nis_result *result;
 
 /* Defined in nisplus-pwd.c.  */
-extern nis_name pwd_tablename_val attribute_hidden;
-extern size_t pwd_tablename_len attribute_hidden;
+extern nis_name pwd_tablename_val ;
+extern size_t pwd_tablename_len;
 extern enum nss_status _nss_pwd_create_tablename (int *errnop);
 
 
@@ -193,7 +193,7 @@ _nss_nisplus_getspnam_r (const char *name, struct spwd *sp,
     {
       enum nss_status status = niserr2nss (result->status);
 
-      __set_errno (olderr);
+      errno = olderr;
 
       nis_freeresult (result);
       return status;
@@ -211,7 +211,7 @@ _nss_nisplus_getspnam_r (const char *name, struct spwd *sp,
 	}
       else
 	{
-	  __set_errno (olderr);
+	  errno = olderr;
 	  return NSS_STATUS_NOTFOUND;
 	}
     }

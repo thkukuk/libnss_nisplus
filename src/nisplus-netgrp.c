@@ -21,10 +21,10 @@
 #include <ctype.h>
 #include <netdb.h>
 #include <string.h>
-#include <netgroup.h>
 #include <rpcsvc/nis.h>
 
 #include "nss-nisplus.h"
+#include "netgroup.h"
 
 #define NISENTRYVAL(idx, col, res) \
         (NIS_RES_OBJECT (res)[idx].EN_data.en_cols.en_cols_val[col].ec_value.ec_value_val)
@@ -162,7 +162,7 @@ _nss_nisplus_setnetgrent (const char *group, struct __netgrent *netgrp)
 
   if (netgrp->data == NULL)
     {
-      __set_errno (ENOMEM);
+      errno = ENOMEM;
       status = NSS_STATUS_TRYAGAIN;
     }
   else if (niserr2nss (((nis_result *) netgrp->data)->status)

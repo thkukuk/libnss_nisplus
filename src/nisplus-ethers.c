@@ -16,7 +16,6 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <atomic.h>
 #include <ctype.h>
 #include <errno.h>
 #include <inttypes.h>
@@ -26,11 +25,20 @@
 #include <netinet/ether.h>
 #include <netinet/if_ether.h>
 #include <rpcsvc/nis.h>
-#include <bits/libc-lock.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
 
 __libc_lock_define_initialized (static, lock)
+
+/* Because the `ethers' lookup does not fit so well in the scheme we
+   define a dummy struct here which helps us to use the available
+   functions.  */
+struct etherent
+{
+  const char *e_name;
+  struct ether_addr e_addr;
+};
 
 static nis_result *result;
 static nis_name tablename_val;
@@ -104,8 +112,6 @@ _nss_create_tablename (int *errnop)
       memcpy (__stpcpy (p, prefix), local_dir, local_dir_len + 1);
 
       tablename_len = sizeof (prefix) - 1 + local_dir_len;
-
-      atomic_write_barrier ();
 
       tablename_val = p;
     }
@@ -277,9 +283,9 @@ _nss_nisplus_gethostton_r (const char *name, struct etherent *eth,
   /* We do not need the lookup result anymore.  */
   nis_freeresult (result);
 
-  if (__glibc_unlikely (parse_res < 1))
+  if (parse_res < 1)
     {
-      __set_errno (olderr);
+      errno = olderr;
 
       if (parse_res == -1)
 	return NSS_STATUS_TRYAGAIN;

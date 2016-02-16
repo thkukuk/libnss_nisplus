@@ -16,7 +16,6 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <atomic.h>
 #include <ctype.h>
 #include <errno.h>
 #include <netdb.h>
@@ -25,8 +24,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <rpcsvc/nis.h>
-#include <bits/libc-lock.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
 
 __libc_lock_define_initialized (static, lock)
@@ -46,6 +45,7 @@ static int
 _nss_nisplus_parse_netent (nis_result *result, struct netent *network,
 			   char *buffer, size_t buflen, int *errnop)
 {
+  unsigned int i;
   char *first_unused = buffer;
   size_t room_left = buflen;
 
@@ -82,7 +82,7 @@ _nss_nisplus_parse_netent (nis_result *result, struct netent *network,
      copy the strings.  It wasteful to first concatenate the strings
      to just split them again later.  */
   char *line = first_unused;
-  for (unsigned int i = 0; i < NIS_RES_NUMOBJ (result); ++i)
+  for (i = 0; i < NIS_RES_NUMOBJ (result); ++i)
     {
       if (strcmp (NISENTRYVAL (i, 1, result), network->n_name) != 0)
         {
@@ -111,7 +111,7 @@ _nss_nisplus_parse_netent (nis_result *result, struct netent *network,
   /* For the terminating NULL pointer.  */
   room_left -= sizeof (char *);
 
-  unsigned int i = 0;
+  i = 0;
   while (*line != '\0')
     {
       /* Skip leading blanks.  */
@@ -158,8 +158,6 @@ _nss_create_tablename (int *errnop)
       memcpy (__stpcpy (p, prefix), local_dir, local_dir_len + 1);
 
       tablename_len = sizeof (prefix) - 1 + local_dir_len;
-
-      atomic_write_barrier ();
 
       tablename_val = p;
     }
@@ -371,7 +369,7 @@ _nss_nisplus_getnetbyname_r (const char *name, struct netent *network,
 
   if (result == NULL)
     {
-      __set_errno (ENOMEM);
+      errno = ENOMEM;
       return NSS_STATUS_TRYAGAIN;
     }
 
@@ -384,7 +382,7 @@ _nss_nisplus_getnetbyname_r (const char *name, struct netent *network,
 	  *herrnop = NETDB_INTERNAL;
 	}
       else
-	__set_errno (olderr);
+	errno = olderr;
       nis_freeresult (result);
       return retval;
     }
@@ -404,7 +402,7 @@ _nss_nisplus_getnetbyname_r (const char *name, struct netent *network,
       return NSS_STATUS_TRYAGAIN;
     }
 
-  __set_errno (olderr);
+  errno = olderr;
   return NSS_STATUS_NOTFOUND;
 }
 
@@ -443,7 +441,7 @@ _nss_nisplus_getnetbyaddr_r (uint32_t addr, const int type,
 
 	if (result == NULL)
 	  {
-	    __set_errno (ENOMEM);
+	    errno = ENOMEM;
 	    return NSS_STATUS_TRYAGAIN;
 	  }
 	enum nss_status retval = niserr2nss (result->status);
@@ -465,7 +463,7 @@ _nss_nisplus_getnetbyaddr_r (uint32_t addr, const int type,
 		*herrnop = NETDB_INTERNAL;
 	      }
 	    else
-	      __set_errno (olderr);
+	      errno = olderr;
 	    nis_freeresult (result);
 	    return retval;
 	  }
@@ -486,7 +484,7 @@ _nss_nisplus_getnetbyaddr_r (uint32_t addr, const int type,
 	  }
 	else
 	  {
-	    __set_errno (olderr);
+	    errno = olderr;
 	    return NSS_STATUS_NOTFOUND;
 	  }
       }

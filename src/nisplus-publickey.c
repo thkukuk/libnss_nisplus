@@ -97,7 +97,7 @@ _nss_nisplus_getpublickey (const char *netname, char *pkey, int *errnop)
        * something wrong with cred table. Should be unique
        * Warn user and continue.
        */
-      syslog (LOG_ERR, _("DES entry for netname %s not unique\n"), netname);
+      syslog (LOG_ERR, "DES entry for netname %s not unique\n", netname);
       nis_freeresult (res);
       return NSS_STATUS_SUCCESS;
     }
@@ -179,7 +179,7 @@ _nss_nisplus_getsecretkey (const char *netname, char *skey, char *passwd,
        * something wrong with cred table. Should be unique
        * Warn user and continue.
        */
-      syslog (LOG_ERR, _("DES entry for netname %s not unique\n"), netname);
+      syslog (LOG_ERR, "DES entry for netname %s not unique\n", netname);
       nis_freeresult (res);
       return NSS_STATUS_SUCCESS;
     }
@@ -216,7 +216,7 @@ parse_grp_str (const char *s, gid_t *gidp, int *gidlenp, gid_t *gidlist,
 
   if (!s || (!isdigit (*s)))
     {
-      syslog (LOG_ERR, _("netname2user: missing group id list in `%s'"), s);
+      syslog (LOG_ERR, "netname2user: missing group id list in `%s'", s);
       return NSS_STATUS_NOTFOUND;
     }
 
@@ -298,13 +298,13 @@ _nss_nisplus_netname2user (char netname[MAXNETNAMELEN + 1], uid_t *uidp,
       return NSS_STATUS_NOTFOUND;
     case NIS_S_NOTFOUND:
     case NIS_TRYAGAIN:
-      syslog (LOG_ERR, _("netname2user: (nis+ lookup): %s\n"),
+      syslog (LOG_ERR, "netname2user: (nis+ lookup): %s\n",
 	      nis_sperrno (res->status));
       nis_freeresult (res);
       *errnop = errno;
       return NSS_STATUS_TRYAGAIN;
     default:
-      syslog (LOG_ERR, _("netname2user: (nis+ lookup): %s\n"),
+      syslog (LOG_ERR, "netname2user: (nis+ lookup): %s\n",
 	      nis_sperrno (res->status));
       nis_freeresult (res);
       return NSS_STATUS_UNAVAIL;
@@ -317,7 +317,7 @@ _nss_nisplus_netname2user (char netname[MAXNETNAMELEN + 1], uid_t *uidp,
      * Warn user and continue.
      */
     syslog (LOG_ALERT,
-	    _("netname2user: DES entry for %s in directory %s not unique"),
+	    "netname2user: DES entry for %s in directory %s not unique",
 	    netname, domain);
 
   len = ENTRY_LEN (NIS_RES_OBJECT (res), 0);
@@ -335,7 +335,7 @@ _nss_nisplus_netname2user (char netname[MAXNETNAMELEN + 1], uid_t *uidp,
   domain = nis_local_directory ();
   if (strlen (principal) + strlen (domain) + 45 > (size_t) NIS_MAXNAMELEN)
     {
-      syslog (LOG_ERR, _("netname2user: principal name `%s' too long"),
+      syslog (LOG_ERR, "netname2user: principal name `%s' too long",
 	      principal);
       return NSS_STATUS_UNAVAIL;
     }
@@ -369,7 +369,7 @@ _nss_nisplus_netname2user (char netname[MAXNETNAMELEN + 1], uid_t *uidp,
       return NSS_STATUS_NOTFOUND;
     case NIS_S_NOTFOUND:
     case NIS_TRYAGAIN:
-      syslog (LOG_ERR, _("netname2user: (nis+ lookup): %s\n"),
+      syslog (LOG_ERR, "netname2user: (nis+ lookup): %s\n",
 	      nis_sperrno (res->status));
       nis_freeresult (res);
       *errnop = errno;
@@ -378,7 +378,7 @@ _nss_nisplus_netname2user (char netname[MAXNETNAMELEN + 1], uid_t *uidp,
     case NIS_S_SUCCESS:
       break;   /* go and do something useful */
     default:
-      syslog (LOG_ERR, _("netname2user: (nis+ lookup): %s\n"),
+      syslog (LOG_ERR, "netname2user: (nis+ lookup): %s\n",
 	      nis_sperrno (res->status));
       nis_freeresult (res);
       return NSS_STATUS_UNAVAIL;
@@ -391,14 +391,14 @@ _nss_nisplus_netname2user (char netname[MAXNETNAMELEN + 1], uid_t *uidp,
      * Warn user and continue.
      */
     syslog (LOG_ALERT,
-	    _("netname2user: LOCAL entry for %s in directory %s not unique"),
+	    "netname2user: LOCAL entry for %s in directory %s not unique",
 	    netname, domain);
   /* Fetch the uid */
   *uidp = strtoul (ENTRY_VAL (NIS_RES_OBJECT (res), 2), NULL, 10);
 
   if (*uidp == 0)
     {
-      syslog (LOG_ERR, _("netname2user: should not have uid 0"));
+      syslog (LOG_ERR, "netname2user: should not have uid 0");
       nis_freeresult (res);
       return NSS_STATUS_NOTFOUND;
     }

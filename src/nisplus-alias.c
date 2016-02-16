@@ -16,15 +16,14 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <atomic.h>
 #include <nss.h>
 #include <errno.h>
 #include <ctype.h>
 #include <string.h>
 #include <aliases.h>
-#include <bits/libc-lock.h>
 #include <rpcsvc/nis.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
 
 __libc_lock_define_initialized (static, lock)
@@ -59,8 +58,6 @@ _nss_create_tablename (int *errnop)
       memcpy (__stpcpy (p, prefix), local_dir, local_dir_len + 1);
 
       tablename_len = sizeof (prefix) - 1 + local_dir_len;
-
-      atomic_write_barrier ();
 
       tablename_val = p;
     }
@@ -180,7 +177,7 @@ internal_setaliasent (void)
   if (result == NULL)
     {
       status = NSS_STATUS_TRYAGAIN;
-      __set_errno (ENOMEM);
+      errno = ENOMEM;
     }
   else
     {
@@ -323,9 +320,9 @@ _nss_nisplus_getaliasbyname_r (const char *name, struct aliasent *alias,
   /* We do not need the lookup result anymore.  */
   nis_freeresult (result);
 
-  if (__glibc_unlikely (parse_res < 1))
+  if (parse_res < 1)
     {
-      __set_errno (olderr);
+      errno = olderr;
 
       if (parse_res == -1)
 	return NSS_STATUS_TRYAGAIN;

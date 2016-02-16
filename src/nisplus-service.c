@@ -16,15 +16,14 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <atomic.h>
 #include <ctype.h>
 #include <errno.h>
 #include <netdb.h>
 #include <nss.h>
 #include <string.h>
 #include <rpcsvc/nis.h>
-#include <bits/libc-lock.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
 
 __libc_lock_define_initialized (static, lock);
@@ -44,6 +43,7 @@ static int
 _nss_nisplus_parse_servent (nis_result *result, struct servent *serv,
 			    char *buffer, size_t buflen, int *errnop)
 {
+  unsigned int i;
   char *first_unused = buffer;
   size_t room_left = buflen;
 
@@ -86,7 +86,7 @@ _nss_nisplus_parse_servent (nis_result *result, struct servent *serv,
      copy the strings.  It wasteful to first concatenate the strings
      to just split them again later.  */
   char *line = first_unused;
-  for (unsigned int i = 0; i < NIS_RES_NUMOBJ (result); ++i)
+  for (i = 0; i < NIS_RES_NUMOBJ (result); ++i)
     {
       if (strcmp (NISENTRYVAL (i, 1, result), serv->s_name) != 0)
         {
@@ -114,7 +114,7 @@ _nss_nisplus_parse_servent (nis_result *result, struct servent *serv,
   /* For the terminating NULL pointer.  */
   room_left -= (sizeof (char *));
 
-  unsigned int i = 0;
+  i = 0;
   while (*line != '\0')
     {
       /* Skip leading blanks.  */
@@ -161,8 +161,6 @@ _nss_create_tablename (int *errnop)
       memcpy (__stpcpy (p, prefix), local_dir, local_dir_len + 1);
 
       tablename_len = sizeof (prefix) - 1 + local_dir_len;
-
-      atomic_write_barrier ();
 
       tablename_val = p;
     }
@@ -364,7 +362,7 @@ _nss_nisplus_getservbyname_r (const char *name, const char *protocol,
     {
       enum nss_status status = niserr2nss (result->status);
 
-      __set_errno (olderr);
+      errno = olderr;
 
       nis_freeresult (result);
       return status;
@@ -383,7 +381,7 @@ _nss_nisplus_getservbyname_r (const char *name, const char *protocol,
 	}
       else
 	{
-	  __set_errno (olderr);
+	  errno = olderr;
 	  return NSS_STATUS_NOTFOUND;
 	}
     }
@@ -433,7 +431,7 @@ _nss_nisplus_getservbyport_r (const int number, const char *protocol,
     {
       enum nss_status status = niserr2nss (result->status);
 
-      __set_errno (olderr);
+      errno = olderr;
 
       nis_freeresult (result);
       return status;
@@ -452,7 +450,7 @@ _nss_nisplus_getservbyport_r (const int number, const char *protocol,
 	}
       else
 	{
-	  __set_errno (olderr);
+	  errno = olderr;
 	  return NSS_STATUS_NOTFOUND;
 	}
     }

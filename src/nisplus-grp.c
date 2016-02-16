@@ -16,21 +16,16 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <atomic.h>
 #include <nss.h>
 #include <grp.h>
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
-#include <bits/libc-lock.h>
 #include <rpcsvc/nis.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
 #include "nisplus-parser.h"
-#include <libnsl.h>
-#include <nis_intern.h>
-#include <nis_xdr.h>
-
 
 __libc_lock_define_initialized (static, lock);
 
@@ -44,8 +39,8 @@ static char *tableptr;
 static netobj cursor;
 
 
-nis_name grp_tablename_val attribute_hidden;
-size_t grp_tablename_len attribute_hidden;
+nis_name grp_tablename_val;
+size_t grp_tablename_len;
 
 enum nss_status
 _nss_grp_create_tablename (int *errnop)
@@ -66,8 +61,6 @@ _nss_grp_create_tablename (int *errnop)
       memcpy (__stpcpy (p, prefix), local_dir, local_dir_len + 1);
 
       grp_tablename_len = sizeof (prefix) - 1 + local_dir_len;
-
-      atomic_write_barrier ();
 
       if (atomic_compare_and_exchange_bool_acq (&grp_tablename_val, p, NULL))
 	{
@@ -335,7 +328,7 @@ _nss_nisplus_getgrnam_r (const char *name, struct group *gr,
 	}
       else
 	{
-	  __set_errno (olderr);
+	  errno = olderr;
 	  return NSS_STATUS_NOTFOUND;
 	}
     }
@@ -371,11 +364,11 @@ _nss_nisplus_getgrgid_r (const gid_t gid, struct group *gr,
       return NSS_STATUS_TRYAGAIN;
     }
 
-  if (__glibc_unlikely (niserr2nss (result->status) != NSS_STATUS_SUCCESS))
+  if (niserr2nss (result->status) != NSS_STATUS_SUCCESS)
     {
       enum nss_status status = niserr2nss (result->status);
 
-      __set_errno (olderr);
+      errno = olderr;
 
       nis_freeresult (result);
       return status;
@@ -384,9 +377,9 @@ _nss_nisplus_getgrgid_r (const gid_t gid, struct group *gr,
   parse_res = _nss_nisplus_parse_grent (result, gr, buffer, buflen, errnop);
 
   nis_freeresult (result);
-  if (__glibc_unlikely (parse_res < 1))
+  if (parse_res < 1)
     {
-      __set_errno (olderr);
+      errno = olderr;
 
       if (parse_res == -1)
 	{

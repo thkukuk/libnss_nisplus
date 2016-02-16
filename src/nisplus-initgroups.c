@@ -15,20 +15,15 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <atomic.h>
 #include <nss.h>
 #include <grp.h>
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
-#include <bits/libc-lock.h>
 #include <rpcsvc/nis.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
-#include "nisplus-parser.h"
-#include <libnsl.h>
-#include <nis_intern.h>
-#include <nis_xdr.h>
 
 #define NISOBJVAL(col, obj) \
   ((obj)->EN_data.en_cols.en_cols_val[col].ec_value.ec_value_val)
@@ -36,8 +31,8 @@
 #define NISOBJLEN(col, obj) \
   ((obj)->EN_data.en_cols.en_cols_val[col].ec_value.ec_value_len)
 
-extern nis_name grp_tablename_val attribute_hidden;
-extern size_t grp_tablename_len attribute_hidden;
+extern nis_name grp_tablename_val;
+extern size_t grp_tablename_len;
 extern enum nss_status _nss_grp_create_tablename (int *errnop);
 
 
@@ -46,6 +41,8 @@ _nss_nisplus_initgroups_dyn (const char *user, gid_t group, long int *start,
 			     long int *size, gid_t **groupsp, long int limit,
 			     int *errnop)
 {
+  unsigned int cnt;
+
   if (grp_tablename_val == NULL)
     {
       enum nss_status status = _nss_grp_create_tablename (errnop);
@@ -84,7 +81,7 @@ _nss_nisplus_initgroups_dyn (const char *user, gid_t group, long int *start,
 
   gid_t *groups = *groupsp;
   nis_object *obj = NIS_RES_OBJECT (result);
-  for (unsigned int cnt = 0; cnt < NIS_RES_NUMOBJ (result); ++cnt, ++obj)
+  for (cnt = 0; cnt < NIS_RES_NUMOBJ (result); ++cnt, ++obj)
     {
       if (__type_of (obj) != NIS_ENTRY_OBJ
 	  || strcmp (obj->EN_data.en_type, "group_tbl") != 0

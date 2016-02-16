@@ -16,15 +16,14 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <atomic.h>
 #include <ctype.h>
 #include <errno.h>
 #include <nss.h>
 #include <string.h>
 #include <rpc/netdb.h>
 #include <rpcsvc/nis.h>
-#include <bits/libc-lock.h>
 
+#include "libc-lock.h"
 #include "nss-nisplus.h"
 
 __libc_lock_define_initialized (static, lock)
@@ -154,8 +153,6 @@ _nss_create_tablename (int *errnop)
       memcpy (__stpcpy (p, prefix), local_dir, local_dir_len + 1);
 
       tablename_len = sizeof (prefix) - 1 + local_dir_len;
-
-      atomic_write_barrier ();
 
       tablename_val = p;
     }
@@ -355,7 +352,7 @@ _nss_nisplus_getrpcbyname_r (const char *name, struct rpcent *rpc,
     {
       enum nss_status status = niserr2nss (result->status);
 
-      __set_errno (olderr);
+      errno = olderr;
 
       nis_freeresult (result);
       return status;
@@ -374,7 +371,7 @@ _nss_nisplus_getrpcbyname_r (const char *name, struct rpcent *rpc,
 	  return NSS_STATUS_TRYAGAIN;
 	}
 
-      __set_errno (olderr);
+      errno = olderr;
       return NSS_STATUS_NOTFOUND;
     }
 
@@ -415,7 +412,7 @@ _nss_nisplus_getrpcbynumber_r (const int number, struct rpcent *rpc,
     {
       enum nss_status status = niserr2nss (result->status);
 
-      __set_errno (olderr);
+      errno = olderr;
 
       nis_freeresult (result);
       return status;
@@ -435,7 +432,7 @@ _nss_nisplus_getrpcbynumber_r (const int number, struct rpcent *rpc,
 	}
       else
 	{
-	  __set_errno (olderr);
+	  errno = olderr;
 	  return NSS_STATUS_NOTFOUND;
 	}
     }

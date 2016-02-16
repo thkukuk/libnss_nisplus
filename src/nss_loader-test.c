@@ -55,7 +55,7 @@ main (void)
       return 1;
     }
 
-  /* Get NIS passwd entry... */
+  /* Get NIS+ passwd entry... */
   do {
     errno = 0;
     status = (*nss_getpwnam_r)("kukuk", &pw, pwdbuffer,

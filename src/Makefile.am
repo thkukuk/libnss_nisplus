@@ -8,14 +8,14 @@
 
 CLEANFILES = *~
 
-EXTRA_DIST = libnss_nisplus.map files-parse.c
+EXTRA_DIST = libnss_nisplus.map
 
-AM_CFLAGS = -D_REENTRANT=1
+AM_CFLAGS = -D_REENTRANT=1 -DNIS_INTERNAL=1
 AM_CPPFLAGS = -I$(srcdir) @LIBNSL_CFLAGS@
 
 lib_LTLIBRARIES = libnss_nisplus.la
 
-noinst_HEADERS = libc-lock.h
+noinst_HEADERS = libc-lock.h nss-nisplus.h netgroup.h nisplus-parser.h
 noinst_PROGRAMS = nss_loader-test
 nss_loader_test_LDADD = -ldl
 
@@ -26,4 +26,4 @@ libnss_nisplus_la_SOURCES = nisplus-alias.c nisplus-ethers.c nisplus-grp.c \
 	nisplus-hosts.c nisplus-initgroups.c nisplus-netgrp.c \
 	nisplus-network.c nisplus-parser.c nisplus-proto.c \
 	nisplus-publickey.c nisplus-pwd.c nisplus-rpc.c nisplus-service.c \
-	nisplus-spwd.c
+	nisplus-spwd.c nss-nisplus.c
