@@ -235,7 +235,7 @@ internal_nisplus_getgrent_r (struct group *gr, char *buffer, size_t buflen,
 
       parse_res = _nss_nisplus_parse_grent (&result, gr,
 					    buffer, buflen, errnop);
-      if (__glibc_unlikely (parse_res == -1))
+      if (parse_res == -1)
 	{
 	  *errnop = ERANGE;
 	  retval = NSS_STATUS_TRYAGAIN;
@@ -309,7 +309,7 @@ _nss_nisplus_getgrnam_r (const char *name, struct group *gr,
       return NSS_STATUS_TRYAGAIN;
     }
 
-  if (__glibc_unlikely (niserr2nss (result->status) != NSS_STATUS_SUCCESS))
+  if (niserr2nss (result->status) != NSS_STATUS_SUCCESS)
     {
       enum nss_status status = niserr2nss (result->status);
 
@@ -319,7 +319,7 @@ _nss_nisplus_getgrnam_r (const char *name, struct group *gr,
 
   parse_res = _nss_nisplus_parse_grent (result, gr, buffer, buflen, errnop);
   nis_freeresult (result);
-  if (__glibc_unlikely (parse_res < 1))
+  if (parse_res < 1)
     {
       if (parse_res == -1)
 	{

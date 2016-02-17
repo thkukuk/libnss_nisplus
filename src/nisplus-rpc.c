@@ -348,7 +348,7 @@ _nss_nisplus_getrpcbyname_r (const char *name, struct rpcent *rpc,
       return NSS_STATUS_TRYAGAIN;
     }
 
-  if (__glibc_unlikely (niserr2nss (result->status) != NSS_STATUS_SUCCESS))
+  if (niserr2nss (result->status) != NSS_STATUS_SUCCESS)
     {
       enum nss_status status = niserr2nss (result->status);
 

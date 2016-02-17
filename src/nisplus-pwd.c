@@ -236,7 +236,7 @@ internal_nisplus_getpwent_r (struct passwd *pw, char *buffer, size_t buflen,
       parse_res = _nss_nisplus_parse_pwent (&result, pw, buffer,
 					    buflen, errnop);
 
-      if (__glibc_unlikely (parse_res == -1))
+      if (parse_res == -1)
 	{
 	  *errnop = ERANGE;
 	  retval = NSS_STATUS_TRYAGAIN;
@@ -310,7 +310,7 @@ _nss_nisplus_getpwnam_r (const char *name, struct passwd *pw,
       return NSS_STATUS_TRYAGAIN;
     }
 
-  if (__glibc_unlikely (niserr2nss (result->status) != NSS_STATUS_SUCCESS))
+  if (niserr2nss (result->status) != NSS_STATUS_SUCCESS)
     {
       enum nss_status status =  niserr2nss (result->status);
 
@@ -324,7 +324,7 @@ _nss_nisplus_getpwnam_r (const char *name, struct passwd *pw,
 
   nis_freeresult (result);
 
-  if (__glibc_unlikely (parse_res < 1))
+  if (parse_res < 1)
     {
       if (parse_res == -1)
 	{
@@ -369,7 +369,7 @@ _nss_nisplus_getpwuid_r (const uid_t uid, struct passwd *pw,
       return NSS_STATUS_TRYAGAIN;
     }
 
-  if (__glibc_unlikely (niserr2nss (result->status) != NSS_STATUS_SUCCESS))
+  if (niserr2nss (result->status) != NSS_STATUS_SUCCESS)
     {
       enum nss_status status = niserr2nss (result->status);
 
@@ -383,7 +383,7 @@ _nss_nisplus_getpwuid_r (const uid_t uid, struct passwd *pw,
 
   nis_freeresult (result);
 
-  if (__glibc_unlikely (parse_res < 1))
+  if (parse_res < 1)
     {
       if (parse_res == -1)
 	{

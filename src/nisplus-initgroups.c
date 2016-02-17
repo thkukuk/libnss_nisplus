@@ -64,7 +64,7 @@ _nss_nisplus_initgroups_dyn (const char *user, gid_t group, long int *start,
       return NSS_STATUS_TRYAGAIN;
     }
 
-  if (__glibc_unlikely (niserr2nss (result->status) != NSS_STATUS_SUCCESS))
+  if (niserr2nss (result->status) != NSS_STATUS_SUCCESS)
     {
       enum nss_status status = niserr2nss (result->status);
 
@@ -95,7 +95,7 @@ _nss_nisplus_initgroups_dyn (const char *user, gid_t group, long int *start,
 
       gid_t gid;
       char *endp;
-      if (__glibc_unlikely (numstr[len - 1] != '\0'))
+      if (numstr[len - 1] != '\0')
 	{
 	  char numstrbuf[len + 1];
 	  memcpy (numstrbuf, numstr, len);
