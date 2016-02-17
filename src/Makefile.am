@@ -16,8 +16,10 @@ AM_CPPFLAGS = -I$(srcdir) @LIBNSL_CFLAGS@
 lib_LTLIBRARIES = libnss_nisplus.la
 
 noinst_HEADERS = libc-lock.h nss-nisplus.h netgroup.h nisplus-parser.h
-noinst_PROGRAMS = nss_loader-test
+check_PROGRAMS = nss_loader-test
 nss_loader_test_LDADD = -ldl
+
+TESTS = $(check_PROGRAMS)
 
 libnss_nisplus_la_LDFLAGS = -version-info 2:0:0 \
 	-Wl,--version-script=$(srcdir)/libnss_nisplus.map

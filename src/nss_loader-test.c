@@ -55,6 +55,7 @@ main (void)
       return 1;
     }
 
+#if 0
   /* Get NIS+ passwd entry... */
   do {
     errno = 0;
@@ -69,6 +70,9 @@ main (void)
 	       status);
       return 1;
     }
+#endif
+
+  dlclose (nss_handle);
 
   return 0;
 }
