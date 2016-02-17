@@ -1,5 +1,7 @@
 2016-02-17  Thorsten Kukuk  <kukuk@thkukuk.de>
 
+	* release version 1.0
+
 	* src/Makefile.am: Add test case if module is loadable.
 
 2016-02-16  Thorsten Kukuk  <kukuk@thkukuk.de>
