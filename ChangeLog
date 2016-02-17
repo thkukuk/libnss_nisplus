@@ -1,16 +1,18 @@
 2016-02-17  Thorsten Kukuk  <kukuk@thkukuk.de>
 
+	* release version 1.0.1
+
 	* src/nisplus-alias.c: Remove __glibc_unlikely.
-        * src/nisplus-ethers.c: Likewise
-        * src/nisplus-grp.c: Likewise
-        * src/nisplus-hosts.c: Likewise
-        * src/nisplus-initgroups.c: Likewise
-        * src/nisplus-network.c: Likewise
-        * src/nisplus-proto.c: Likewise
-        * src/nisplus-pwd.c: Likewise
-        * src/nisplus-rpc.c: Likewise
-        * src/nisplus-service.c: Likewise
-        * src/nisplus-spwd.c: Likewise
+	* src/nisplus-ethers.c: Likewise
+	* src/nisplus-grp.c: Likewise
+	* src/nisplus-hosts.c: Likewise
+	* src/nisplus-initgroups.c: Likewise
+	* src/nisplus-network.c: Likewise
+	* src/nisplus-proto.c: Likewise
+	* src/nisplus-pwd.c: Likewise
+	* src/nisplus-rpc.c: Likewise
+	* src/nisplus-service.c: Likewise
+	* src/nisplus-spwd.c: Likewise
 
 	* release version 1.0
 
