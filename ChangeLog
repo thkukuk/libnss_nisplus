@@ -1,5 +1,7 @@
 2016-03-15  Thorsten Kukuk  <kukuk@thkukuk.de>
 
+	* release version 1.1
+
 	* configure.ac: Check for libtirpc
 	* src/Makefile.am: Use TIRPC CFLAGS and LIBS.
 

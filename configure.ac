@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(libnss_nisplus, 1.0.1)
+AC_INIT(libnss_nisplus, 1.1)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/nss-nisplus.c])
 AM_CONFIG_HEADER(config.h)
