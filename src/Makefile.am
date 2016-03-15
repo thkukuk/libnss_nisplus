@@ -11,7 +11,7 @@ CLEANFILES = *~
 EXTRA_DIST = libnss_nisplus.map
 
 AM_CFLAGS = -D_REENTRANT=1 -DNIS_INTERNAL=1
-AM_CPPFLAGS = -I$(srcdir) @LIBNSL_CFLAGS@
+AM_CPPFLAGS = -I$(srcdir) @TIRPC_CFLAGS@ @LIBNSL_CFLAGS@
 
 lib_LTLIBRARIES = libnss_nisplus.la
 
@@ -23,7 +23,7 @@ TESTS = $(check_PROGRAMS)
 
 libnss_nisplus_la_LDFLAGS = -version-info 2:0:0 \
 	-Wl,--version-script=$(srcdir)/libnss_nisplus.map
-libnss_nisplus_la_LIBADD = @LIBNSL_LIBS@
+libnss_nisplus_la_LIBADD = @LIBNSL_LIBS@ @TIRPC_LIBS@
 libnss_nisplus_la_SOURCES = nisplus-alias.c nisplus-ethers.c nisplus-grp.c \
 	nisplus-hosts.c nisplus-initgroups.c nisplus-netgrp.c \
 	nisplus-network.c nisplus-parser.c nisplus-proto.c \
