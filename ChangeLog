@@ -1,3 +1,14 @@
+2016-03-22  Thorsten Kukuk  <kukuk@thkukuk.de>
+
+	* src/nisplus-rpc.c: Include netdb.h or rpcent.h depending
+	on configure result.
+
+	* src/nisplus-publickey.c (_nss_nisplus_getsecretkey): Only
+	compile if xdecrypt exist.
+
+	* configure.ac: Check for xdecrypt function.
+	* configure.ac: Check for rpc/netdb.h, rpcent.h header files.
+
 2016-03-15  Thorsten Kukuk  <kukuk@thkukuk.de>
 
 	* release version 1.1
