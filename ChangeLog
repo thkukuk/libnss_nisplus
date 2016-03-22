@@ -1,5 +1,7 @@
 2016-03-22  Thorsten Kukuk  <kukuk@thkukuk.de>
 
+	* release version 1.2
+
 	* src/nisplus-rpc.c: Include netdb.h or rpcent.h depending
 	on configure result.
 
