@@ -43,7 +43,7 @@ static u_long tablename_len;
 	(NIS_RES_OBJECT (res)[idx].EN_data.en_cols.en_cols_val[col].ec_value.ec_value_len)
 
 /* Get implementation for some internal functions. */
-#include <resolv/mapv4v6addr.h>
+#include "mapv4v6addr.h"
 
 
 static int
